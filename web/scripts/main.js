@@ -11,7 +11,9 @@ form?.addEventListener('submit', event => {
     event.preventDefault();
 
     const message = input?.value;
-    const error = process(message)
+    const error = process(message);
+
+    input.value = '';
 
     if (error) {
         displayError(error);
