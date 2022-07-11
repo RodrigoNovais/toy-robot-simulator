@@ -5,6 +5,7 @@ const input = form?.querySelector('input');
 const button = form?.querySelector('button');
 
 const errorPanel = document.querySelector('span');
+const commandListPanel = document.querySelector('ul');
 
 form?.addEventListener('submit', event => {
     event.preventDefault();
@@ -69,4 +70,24 @@ export const process = (message) => {
 
     const error = Commands[command](args);
     if (error) return error;
+
+    addToLogTable(args ? `${command} ${args}` : command);
+}
+
+/** @type {string[]} */
+const log = [];
+
+/**
+ * Log command to be command panel
+ *
+ * @param {string} message
+ */
+export const addToLogTable = (message) => {
+    log.push(message);
+
+    const item = document.createElement('li');
+    item.appendChild(document.createTextNode(message));
+
+    commandListPanel?.appendChild(item);
+    commandListPanel?.scrollTo({ top: commandListPanel.scrollHeight });
 }
