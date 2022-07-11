@@ -1,4 +1,4 @@
-import { Commands, CommandValidator, ParsePlaceArguments } from '.';
+import { Commands, CommandValidator } from '.';
 
 const COMMANDS = Object.keys(Commands);
 
@@ -23,4 +23,3 @@ it ('should return the command from the commands map', () => {
         expect(method).toBeInstanceOf(Function);
     })
 })
-
