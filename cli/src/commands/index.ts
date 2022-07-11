@@ -1,18 +1,29 @@
+import { Move } from './move';
+import { Place } from './place';
+import { Report } from './report';
+import { Turn } from './turn';
+
+import { Handler } from './handler';
 import { Robot } from '../entities/robot';
 import { Table } from '../entities/table';
 
 import { tryParseInt } from '../utils/try-parse-int';
-import { isRotation, normalizeAngle, rotationToCardinal, rotationToDegrees, rotationToDirection } from '../helpers/rotation';
-
-import type { Rotation } from '../helpers/rotation';
+import { isRotation } from '../helpers/rotation';
 
 export abstract class Command {
     execute(): void {}
     undo?(): void;
+
+     static Place(...params: ConstructorParameters<typeof Place>) { return new Place(...params); }
+     static Move(...params: ConstructorParameters<typeof Move>) { return new Move(...params); }
+     static Turn(...params: ConstructorParameters<typeof Turn>) { return new Turn(...params); }
+     static Report(...params: ConstructorParameters<typeof Report>) { return new Report(...params); }
 }
 
 const robot = new Robot();
 const table = new Table(5);
+
+const handler = new Handler();
 
 export const Commands = {
     PLACE: (args: string): void => {
@@ -23,41 +34,13 @@ export const Commands = {
 
         if (X === undefined || Y === undefined) return;
         if (!isRotation(facing)) return;
-        if (!table.isInside([X, Y])) return;
 
-        robot.move([X, Y]);
-        robot.rotate(facing);
+        handler.add(Command.Place(table, robot, [X, Y], facing));
     },
-    MOVE: (): void => {
-        if (!robot.isPlaced()) return;
-
-        const [robotX, robotY] = robot.position!;
-        const [moveX, moveY] = rotationToDirection(robot.rotation!);
-
-        // For this use case, y value increases towards south so moveY must be consumed inverted
-        const intent: [number, number] = [robotX + moveX, robotY - moveY];
-        if (!table.isInside(intent)) return;
-
-        robot.move(intent);
-    },
-    LEFT: (): void => {
-        if (!robot.isPlaced()) return;
-
-        const degrees = rotationToDegrees(robot.rotation!) + 90 * -1;
-        robot.rotate(rotationToCardinal(normalizeAngle(degrees) as Rotation));
-    },
-    RIGHT: (): void => {
-        if (!robot.isPlaced()) return;
-
-        const degrees = rotationToDegrees(robot.rotation!) + 90;
-        robot.rotate(rotationToCardinal(normalizeAngle(degrees) as Rotation));
-    },
-    REPORT: (): void => {
-        if (!robot.isPlaced()) return;
-
-        const [x, y] = robot.position!;
-        process.stdout.write(`${x},${y},${robot.rotation}\n`);
-    },
+    MOVE: (): void => { handler.add(Command.Move(table, robot)); },
+    LEFT: (): void => { handler.add(Command.Turn(robot, -1)); },
+    RIGHT: (): void => { handler.add(Command.Turn(robot, 1)); },
+    REPORT: (): void => { handler.add(Command.Report(robot)); },
 } as const;
 
 /**
