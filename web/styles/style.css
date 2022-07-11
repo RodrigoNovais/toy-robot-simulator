@@ -135,6 +135,22 @@ body, button, input, textarea {
     cursor: pointer;
 }
 
+.container span {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.container span.error {
+    width: 24rem;
+
+    background-color: crimson;
+    color: var(--white-tile);
+
+    padding: 1rem;
+    transform: translateY(calc(100% + 1rem));
+}
+
 .container .board {
     display: grid;
     grid-template: repeat(5, 1fr) / repeat(5, 1fr);

@@ -4,6 +4,8 @@ const form = document.querySelector('form');
 const input = form?.querySelector('input');
 const button = form?.querySelector('button');
 
+const errorPanel = document.querySelector('span');
+
 form?.addEventListener('submit', event => {
     event.preventDefault();
 
@@ -28,6 +30,23 @@ input?.addEventListener('input', () => {
 
     button.disabled = !input.value.trim();
 });
+
+/**
+ * Displays an error message to the user
+ *
+ * @param {string=} message - error message to display
+ */
+export const displayError = (message) => {
+    errorPanel.innerText = message;
+    errorPanel?.classList.add('error')
+
+}
+
+/** Remove the error message */
+export const clearError = () => {
+    errorPanel.innerText = '';
+    errorPanel?.classList.remove('error')
+}
 
 /**
  * Process the user input
