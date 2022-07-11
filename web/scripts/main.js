@@ -10,9 +10,14 @@ form?.addEventListener('submit', event => {
     event.preventDefault();
 
     const message = input?.value;
-    process(message);
+    const error = process(message)
 
-    input.value = '';
+    if (error) {
+        displayError(error);
+        return;
+    }
+
+    clearError();
 })
 
 /** Prevent inputs to begin with space */
@@ -62,5 +67,6 @@ export const process = (message) => {
     if (!command) return;
     if (!CommandValidator(command)) return `"${command}" não é um comando valido`;
 
-    Commands[command](args);
+    const error = Commands[command](args);
+    if (error) return error;
 }
